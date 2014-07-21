@@ -28,13 +28,27 @@ typedef struct{
 
 struct mosquitto *mqtt;
 
+static void on_message(struct mosquitto *m, void *udata, const struct mosquitto_message *msg)
+{
+    if (msg == NULL) { return; }
+    
+    float value;
+    const char* pch = ((char *)msg->payload);
+    stringstream(pch) >> value;
+    
+    cout << "received MQTT message, topic: " <<  msg->topic << " payload: " << value << endl;
+}
+
+
+
 void setup(void)
 {
 
 	mqtt = mosquitto_new(NULL, true, NULL);
 	mosquitto_connect(mqtt, "localhost", 1883, 60);
 
-
+	mosquitto_message_callback_set(mqtt, on_message);
+	mosquitto_subscribe(mqtt, NULL, "RF24SN/out/+/+", 0);
 
 
   radio.begin();
@@ -79,7 +93,7 @@ void processPublishPacket(Packet packet)
 	
 	std::stringbuf topic;      
   	std::ostream ts (&topic);  
-	ts << "RF24SN/out/" << ((int) packet.nodeId) << "/" << ((int) packet.sensorId);
+	ts << "RF24SN/in/" << ((int) packet.nodeId) << "/" << ((int) packet.sensorId);
 	
 	std::stringbuf payload;      
   	std::ostream ps (&payload);  
@@ -118,7 +132,10 @@ void loop(void)
     }
 
     //to keep system load low
-    delay(100);
+    //delay(100);
+    mosquitto_loop(	mqtt, 100, 42 /* the answer to life universe and everything */ );
+
+
 
 }
 
