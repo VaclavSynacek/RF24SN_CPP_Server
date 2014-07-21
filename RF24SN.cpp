@@ -34,15 +34,7 @@ void setup(void)
 	mqtt = mosquitto_new(NULL, true, NULL);
 	mosquitto_connect(mqtt, "localhost", 1883, 60);
 
-	std::stringbuf topic;      
-  	std::ostream ts (&topic);  
-	ts << "RF24SN/out/" << 1 << "/" << 4;
-	
-	std::stringbuf payload;      
-  	std::ostream ps (&payload);  
-	ps << 2.003;
-	
-	mosquitto_publish(mqtt, NULL, topic.str().c_str(), payload.str().size(), payload.str().c_str(), 0, false);
+
 
 
   radio.begin();
@@ -84,7 +76,16 @@ void processPublishPacket(Packet packet)
 	printPacket(packet);
 	packet.packetType = PUBACK_PACKET;
 	sendPacket(packet);
-	//TODO MQTT publish code here
+	
+	std::stringbuf topic;      
+  	std::ostream ts (&topic);  
+	ts << "RF24SN/out/" << ((int) packet.nodeId) << "/" << ((int) packet.sensorId);
+	
+	std::stringbuf payload;      
+  	std::ostream ps (&payload);  
+	ps << packet.value;
+	
+	mosquitto_publish(mqtt, NULL, topic.str().c_str(), payload.str().size(), payload.str().c_str(), 0, false);
 }
 
 void processRequestPacket(Packet packet)
