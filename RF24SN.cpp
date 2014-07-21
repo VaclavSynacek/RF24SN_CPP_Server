@@ -1,7 +1,8 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
-#include <sstream>  
+#include <sstream>
+#include <map>  
 
 #include "RF24.h"
 #include "mosquitto.h"
@@ -25,6 +26,7 @@ typedef struct{
     static const uint8_t REQUEST_PACKET = 3;
     static const uint8_t RESPONSE_PACKET = 4;
 
+std::map<string, float> messageStore;
 
 struct mosquitto *mqtt;
 
@@ -36,7 +38,11 @@ static void on_message(struct mosquitto *m, void *udata, const struct mosquitto_
     const char* pch = ((char *)msg->payload);
     stringstream(pch) >> value;
     
-    cout << "received MQTT message, topic: " <<  msg->topic << " payload: " << value << endl;
+    string topic = msg->topic;
+    
+    messageStore[topic] = value;
+
+    cout << "received MQTT message, topic: " <<  topic << " value: " << value << endl;
 }
 
 
@@ -107,7 +113,13 @@ void processRequestPacket(Packet packet)
 	cout << "request: ";
 	printPacket(packet);
 	packet.packetType = RESPONSE_PACKET;
-	packet.value = 3.14; //TODO replace with value obtained from MQTT
+	
+	std::stringbuf topic;      
+  	std::ostream ts (&topic);  
+	ts << "RF24SN/out/" << ((int) packet.nodeId) << "/" << ((int) packet.sensorId);
+	
+	packet.value = messageStore[topic.str()];
+	
 	sendPacket(packet);
 }
 
@@ -131,11 +143,7 @@ void loop(void)
 
     }
 
-    //to keep system load low
-    //delay(100);
-    mosquitto_loop(	mqtt, 100, 42 /* the answer to life universe and everything */ );
-
-
+    mosquitto_loop(	mqtt, 50, 42 /* the answer to life universe and everything */ );
 
 }
 
