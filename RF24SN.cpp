@@ -1,7 +1,10 @@
 #include <cstdlib>
 #include <iostream>
+#include <string>
+#include <sstream>  
 
 #include "RF24.h"
+#include "mosquitto.h"
 
 //TODO load from program arguments
 RF24 radio("/dev/spidev0.0",8000000 , 25);
@@ -23,9 +26,24 @@ typedef struct{
     static const uint8_t RESPONSE_PACKET = 4;
 
 
+struct mosquitto *mqtt;
 
 void setup(void)
 {
+
+	mqtt = mosquitto_new(NULL, true, NULL);
+	mosquitto_connect(mqtt, "localhost", 1883, 60);
+
+	std::stringbuf topic;      
+  	std::ostream ts (&topic);  
+	ts << "RF24SN/out/" << 1 << "/" << 4;
+	
+	std::stringbuf payload;      
+  	std::ostream ps (&payload);  
+	ps << 2.003;
+	
+	mosquitto_publish(mqtt, NULL, topic.str().c_str(), payload.str().size(), payload.str().c_str(), 0, false);
+
 
   radio.begin();
   radio.setPayloadSize(sizeof(Packet));

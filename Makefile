@@ -26,8 +26,8 @@ SOURCES = ${PROGRAMS:=.cpp}
 all: ${PROGRAMS}
 
 ${PROGRAMS}: ${SOURCES}
-#	g++ ${CCFLAGS} -Wall  -lrf24 $@.cpp -o $@
-	g++ ${CCFLAGS}  -lrf24 $@.cpp -o $@
+#	g++ ${CCFLAGS} -Wall  -lrf24 $@.cpp -o $@ -lmosquitto
+	g++ ${CCFLAGS}  -lrf24  $@.cpp -o $@ -lmosquitto
 
 clean:
 	rm -rf $(PROGRAMS)
