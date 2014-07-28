@@ -26,5 +26,10 @@ OBJ_FILES=$(CPP_FILES:.cpp=.o)
 all: $(OBJ_FILES)
 	g++ $(LD_FLAGS) -o RF24SN $^
 
+clean:
+	rm RF24SN
+	rm *.o
+
+
 CC_FLAGS += -MMD
 -include $(OBJFILES:.o=.d)
