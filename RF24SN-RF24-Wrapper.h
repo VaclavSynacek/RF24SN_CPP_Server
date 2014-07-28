@@ -3,9 +3,8 @@
 
 #include <stdint.h>
 #include "RF24SN-Packet.h"
-#include "RF24SN.h"
 
-void RF24Setup(void);
+void RF24Setup(void (*processPacket)(Packet));
 void sendPacket(Packet packet);
 void RF24Loop(void);
 

@@ -9,7 +9,9 @@ RF24 radio("/dev/spidev0.0",8000000 , 25);
 
 uint64_t base_pipe = 0xF0F0F0F000LL;      // address of the pipe to the base.
 
-void RF24Setup(void)
+void (*_processPacket)(Packet);
+
+void RF24Setup( void (*processPacket)(Packet) )
 {
   radio.begin();
   radio.setPayloadSize(sizeof(Packet));
@@ -26,6 +28,8 @@ void RF24Setup(void)
   radio.printDetails();
 
   printf("size of packet   = %hu\n", sizeof(Packet));
+  
+  _processPacket = processPacket;
 
 }
 
@@ -46,7 +50,7 @@ void RF24Loop(void)
     {
         Packet packet;
         radio.read( &packet, sizeof(Packet) );
-		processPacket(packet);
+		_processPacket(packet);
     }
 
 }

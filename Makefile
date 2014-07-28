@@ -29,6 +29,7 @@ all: $(OBJ_FILES)
 clean:
 	rm RF24SN
 	rm *.o
+	rm *.d
 
 
 CC_FLAGS += -MMD

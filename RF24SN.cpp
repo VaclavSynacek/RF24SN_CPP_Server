@@ -11,7 +11,7 @@ using namespace std;
 void setup(void)
 {
 	mqttSetup();
-	RF24Setup();
+	RF24Setup(&processPacket);
 }
 
 void processPacket(Packet packet)
