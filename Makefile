@@ -13,30 +13,18 @@
 # Requires librf24 installed
 #
 
-#prefix := /opt/RF24SN
 
 # The recommended compiler flags for the Raspberry Pi
-CCFLAGS=-Wall -Ofast -mfpu=vfp -mfloat-abi=hard -march=armv6zk -mtune=arm1176jzf-s
+CC_FLAGS=-Wall -Ofast -mfpu=vfp -mfloat-abi=hard -march=armv6zk -mtune=arm1176jzf-s
+LD_FLAGS=-lrf24 -lmosquitto
+CPP_FILES=$(wildcard *.cpp)
+OBJ_FILES=$(CPP_FILES:.cpp=.o)
 
+%.o: %.cpp
+	g++ $(CC_FLAGS) -c -o $@ $<
+   
+all: $(OBJ_FILES)
+	g++ $(LD_FLAGS) -o RF24SN $^
 
-# define all programs
-PROGRAMS = RF24SN
-SOURCES = ${PROGRAMS:=.cpp}
-
-all: ${PROGRAMS}
-
-${PROGRAMS}: ${SOURCES}
-#	g++ ${CCFLAGS} -Wall  -lrf24 $@.cpp -o $@ -lmosquitto
-	g++ ${CCFLAGS}  -lrf24  $@.cpp -o $@ -lmosquitto
-
-clean:
-	rm -rf $(PROGRAMS)
-
-install: all
-	test -d $(prefix) || mkdir $(prefix)
-	test -d $(prefix)/bin || mkdir $(prefix)/bin
-	for prog in $(PROGRAMS); do \
-	  install -m 0755 $$prog $(prefix)/bin; \
-	done
-
-.PHONY: install
+CC_FLAGS += -MMD
+-include $(OBJFILES:.o=.d)

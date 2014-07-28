@@ -1,0 +1,2 @@
+RF24SN.o: RF24SN.cpp RF24SN.h RF24SN-Packet.h RF24SN-MQTT-Wrapper.h \
+ RF24SN-RF24-Wrapper.h
