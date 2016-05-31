@@ -5,7 +5,7 @@
 #include "RF24.h"
 
 //TODO load from program arguments
-RF24 radio("/dev/spidev0.0",8000000 , 25);
+RF24 radio(22,0);
 
 uint64_t base_pipe = 0xF0F0F0F000LL;      // address of the pipe to the base.
 
