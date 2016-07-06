@@ -52,7 +52,7 @@ void mqttPublish(int nodeId, int sensorId, float value)
 
 float mqttRequest(int nodeId, int sensorId)
 {
-    string topic = mqttTopic(nodeId, sensorId, true);
+    string topic = mqttTopic(nodeId, sensorId, false);
 	return messageStore[topic];
 }
 
