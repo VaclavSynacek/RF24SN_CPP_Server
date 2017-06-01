@@ -14,7 +14,7 @@ Install [RF24-rpi](https://github.com/jscrane/RF24-rpi) according to [this guide
 
 Install libmosquitto
 ```Shell
-apt-get install libmosquito-dev
+apt-get install libmosquitto-dev
 ```
 
 Then compile
